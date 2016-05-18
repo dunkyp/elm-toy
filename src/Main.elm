@@ -1,10 +1,11 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.App as Html
-import Html.Events exposing ( onClick )
 
+import Random
 -- component import example
 import Components.Fish exposing ( fish )
+
 
 
 -- APP
@@ -14,7 +15,8 @@ main =
 
 -- MODEL
 type alias Model = List Int
-model = [10,20,30,30,30,25,40,10,3]
+model =  Random.step (Random.list 200 (Random.int 1 100)) (Random.initialSeed 10) 
+      |> fst
 
 
 -- UPDATE
@@ -27,11 +29,6 @@ update msg model =
     Increment -> model
 
 
--- VIEW
--- Examples of:
--- 1)  an externally defined component ('hello', takes 'model' as arg)
--- 2a) styling through CSS classes (external stylesheet)
--- 2b) styling using inline style attribute (two variants)
 view : Model -> Html Msg
 view model =
   div
@@ -39,7 +36,6 @@ view model =
       [fish model]
 
 
--- CSS STYLES
 styles =
   {
     wrapper =

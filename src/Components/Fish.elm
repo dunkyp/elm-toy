@@ -1,20 +1,39 @@
-module Components.Fish exposing (model, update, fish)
+module Components.Fish exposing (fish)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Array
 
--- Model
-
-model = 0
-
--- Update
-update msg model = 
-  model
+waveEquation cells =
+  let
+    inCells = Array.fromList cells
+  in
+    List.indexedMap(\i h ->
+                      h) cells
 
 fish model =
   let
-    bars = List.indexedMap (\i h->rect [y "10", x (toString (i * 20)), width "20", height (toString h), fill "blue"][]) model
+    aspectWidth = 1000
+    aspectHeight = 100
+    aspectHeightString = toString aspectHeight
+    aspectWidthString = toString aspectWidth
+    length = 
+      List.length model
+    barWidth =
+      aspectWidth / (toFloat length)
+    xOffset position =
+      barWidth * (toFloat position)
+    test = waveEquation model
+    bars =
+      List.indexedMap (\i h->
+                         rect [y << toString <| (aspectHeight - h),
+                               x <| toString <| xOffset i, width <| toString barWidth, 
+                               height (toString h), 
+                               fill "blue"][]) test
   in
   svg
-    [ version "1.1",  viewBox "0 0 323.141 322.95"
+    [ version "1.1",  
+      viewBox ("0 0 " ++ aspectWidthString ++ " " ++ aspectHeightString), 
+      width  aspectWidthString,
+      height aspectHeightString
     ]
     bars
