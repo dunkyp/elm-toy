@@ -3,12 +3,37 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Array
 
-waveEquation cells =
+getCell cells cell =
+  let 
+    cellValue = Array.get cell cells
+  in
+    case cellValue of
+      Just x -> x
+      Nothing -> if cell < 0 
+                 then getCell cells (cell + 1)
+                 else getCell cells (cell - 1)
+
+waveEquation' : Array.Array Float -> Int -> Float -> Float
+waveEquation' cells cell barWidth =
   let
+    c = 1.2
+    thisCell = getCell cells cell
+    previousCell = getCell cells (cell - 1)
+    nextCell = getCell cells (cell + 1)
+    bSq = barWidth * barWidth
+    cSq = c * c
+  in
+    thisCell + (cSq * (previousCell + nextCell - 2*thisCell) / bSq) * 6.0
+
+
+waveEquation: List Float -> Float -> List Float
+waveEquation cells barWidth =
+  let
+    c = 1.2
     inCells = Array.fromList cells
   in
     List.indexedMap(\i h ->
-                      h) cells
+                      waveEquation' inCells i barWidth) cells
 
 fish model =
   let
@@ -22,7 +47,7 @@ fish model =
       aspectWidth / (toFloat length)
     xOffset position =
       barWidth * (toFloat position)
-    test = waveEquation model
+    test = waveEquation model barWidth
     bars =
       List.indexedMap (\i h->
                          rect [y << toString <| (aspectHeight - h),

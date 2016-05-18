@@ -14,9 +14,10 @@ main =
 
 
 -- MODEL
-type alias Model = List Int
-model =  Random.step (Random.list 200 (Random.int 1 100)) (Random.initialSeed 10) 
+type alias Model = List Float
+model =  Random.step (Random.list 200 (Random.float 1 100)) (Random.initialSeed 10) 
       |> fst
+
 
 
 -- UPDATE
