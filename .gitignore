@@ -1,3 +1,6 @@
 elm-stuff/
 node_modules/
 tmp/
+# elm-package generated files
+repl-temp-*
+
