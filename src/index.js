@@ -2,5 +2,5 @@
 require( './styles/mt.css/mt.scss' );
 require( './styles/app.css' );
 
-var Elm = require( './Main' );
+var Elm = require( './Main.elm' );
 Elm.Main.embed( document.getElementById( 'main' ) );

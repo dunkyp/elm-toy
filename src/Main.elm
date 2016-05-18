@@ -4,7 +4,7 @@ import Html.App as Html
 import Html.Events exposing ( onClick )
 
 -- component import example
-import Components.Hello exposing ( hello )
+import Components.Fish exposing ( fish )
 
 
 -- APP
@@ -13,8 +13,8 @@ main =
 
 
 -- MODEL
-type alias Model = Int
-model = 0
+type alias Model = List Int
+model = [10,20,30,30,30,25,40,10,3]
 
 
 -- UPDATE
@@ -24,7 +24,7 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     NoOp -> model
-    Increment -> model + 1
+    Increment -> model
 
 
 -- VIEW
@@ -36,11 +36,7 @@ view : Model -> Html Msg
 view model =
   div
     [ class "mt-palette-accent", style styles.wrapper ]
-    [ hello model
-    ,  p [ style [( "color", "#FFF")] ] [ text ( "Elm Webpack Starter" ) ]
-    ,  button [ class "mt-button-sm", onClick Increment ] [ text "FTW!" ]
-    ,  img [ src "img/elm.jpg", style [( "display", "block"), ( "margin", "10px auto")] ] []
-    ]
+      [fish model]
 
 
 -- CSS STYLES
