@@ -33,16 +33,24 @@ waveEquation cells barWidth =
     c = 1.2
     inCells = Array.fromList cells.u
   in
-    {u = List.indexedMap(\i h ->
-                           waveEquation' inCells i barWidth) cells.u
-    , v = cells.v}
+    {cells | 
+       u = List.indexedMap(\i h ->
+                                   waveEquation' inCells i barWidth) cells.u,
+       v = cells.v}
        
 
-type alias Model = {u : List Float, v : List Int}
-model = 
-  { u = Random.step (Random.list 200 (Random.float 1 100)) (Random.initialSeed 10) 
+type alias Model = {u : List Float, v : List Int, aspectWidth: Int, barWidth: Float }
+model =
+  let
+    aspectWidth = 1000
+    length = 200
+  in
+  { u = Random.step (Random.list length (Random.float 1 100)) (Random.initialSeed 10) 
   |> fst,
-    v = List.repeat 200 0 }
+    v = List.repeat length 0,
+
+    aspectWidth = aspectWidth,
+    barWidth = aspectWidth / (toFloat length) }
 
 view model =
   let
