@@ -1,8 +1,10 @@
-module Components.Fish exposing (view, model, Model, waveEquation)
+module Components.Fish exposing (view, model, Model, heights)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Random
 import Array
+
+import Debug exposing (log)
 
 getCell cells cell =
   let 
@@ -14,42 +16,41 @@ getCell cells cell =
                  then getCell cells (cell + 1)
                  else getCell cells (cell - 1)
 
-waveEquation' : Array.Array Float -> Int -> Float -> Float
-waveEquation' cells cell barWidth =
-  let
-    c = 1.2
+force cells cell barWidth = 
+  let 
+    c = 0.08
     thisCell = getCell cells cell
     previousCell = getCell cells (cell - 1)
     nextCell = getCell cells (cell + 1)
     bSq = barWidth * barWidth
     cSq = c * c
   in
-    thisCell + (cSq * (previousCell + nextCell - 2*thisCell) / bSq) * 6.0
+    (cSq * (previousCell + nextCell - 2*thisCell) / bSq)
 
+velocity model =
+  -- delta t = 1 for just now
+  Array.indexedMap (\i v -> v + (force model.u i model.barWidth)) model.v
 
-waveEquation : Model -> Float -> Model
-waveEquation cells barWidth =
+heights model =
+  -- delta t = 1 for just now
   let
-    c = 1.2
-    inCells = Array.fromList cells.u
+    model = 
+      {model |
+         v = velocity model}
   in
-    {cells | 
-       u = List.indexedMap(\i h ->
-                                   waveEquation' inCells i barWidth) cells.u,
-       v = cells.v}
-       
+    {model |
+       u = Array.indexedMap (\i u -> u + (getCell model.v i)) model.u}
 
-type alias Model = {u : List Float, v : List Int, 
-                    aspectWidth: Int, barWidth: Float,
-                    aspectHeight: Int }
+type alias Model = {u : Array.Array Float, v : Array.Array Float, 
+                      aspectWidth: Int, barWidth: Float,
+                      aspectHeight: Int }
 model =
   let
     aspectWidth = 1000
-    length = 200
+    length = 2000
   in
-  { u = Random.step (Random.list length (Random.float 1 100)) (Random.initialSeed 10) 
-  |> fst,
-    v = List.repeat length 0,
+  { u = Array.fromList <| fst <| Random.step (Random.list length (Random.float 10 20)) (Random.initialSeed 10),
+    v = Array.repeat length 0.0,
 
     aspectWidth = aspectWidth,
     aspectHeight = 100,
@@ -60,20 +61,20 @@ view model =
     aspectHeightString = toString model.aspectHeight
     aspectWidthString = toString model.aspectWidth
     length = 
-      List.length model.u
+      Array.length model.u
     xOffset position =
       model.barWidth * (toFloat position)
     bars =
-      List.indexedMap (\i h->
-                         rect [y << toString <| ((toFloat model.aspectHeight) - h),
-                               x <| toString <| xOffset i, width <| toString model.barWidth, 
-                               height (toString h), 
-                               fill "blue"][]) model.u
+      Array.toList (Array.indexedMap (\i h->
+                                        rect [y << toString <| ((toFloat model.aspectHeight) - h),
+                                                x <| toString <| xOffset i, width <| toString model.barWidth, 
+                                                height (toString h), 
+                                                fill "blue"][]) (heights model).u)
   in
-  svg
-    [ version "1.1",  
-      viewBox ("0 0 " ++ aspectWidthString ++ " " ++ aspectHeightString), 
-      width  aspectWidthString,
-      height aspectHeightString
-    ]
-    bars
+    svg
+      [ version "1.1",  
+          viewBox ("0 0 " ++ aspectWidthString ++ " " ++ aspectHeightString), 
+          width  aspectWidthString,
+          height aspectHeightString
+      ]
+      bars

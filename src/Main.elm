@@ -1,8 +1,9 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.App as Html
-
 import Random
+import Time exposing (Time, millisecond)
+
 -- component import example
 import Components.Fish as Fish
 
@@ -16,8 +17,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-  --Html.beginnerProgram { model = model, view = view, update = update }
-
 
 -- MODEL
 type alias Model = Fish.Model
@@ -27,13 +26,15 @@ init =
     ( Fish.model, Cmd.none )
 
 -- UPDATE
-type Msg = NoOp | Increment
+type Msg = 
+         Tick Time
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    NoOp -> (model, Cmd.none)
-    Increment -> (model, Cmd.none)
+    Tick time ->
+      ( Fish.heights model, Cmd.none )
+      
 
 
 view : Model -> Html Msg
@@ -44,7 +45,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch []
+  Time.every millisecond Tick
 
 
 styles =
