@@ -78,6 +78,8 @@ view model =
                                      ) model.u)
     pathString = Svg.path [d (pathStart ++ (List.foldr (++) "" pathList) ++ pathEnd),
                           fill "blue"][]
+    splashString = text' [y "20", fill "#FFF88F", fontWeight "bold"] <| [Svg.text "SPLASH."]
+    fishString = text' [y "20", fill "#FFF88F", fontWeight "lighter", x "70"] <| [Svg.text "fish"]
   in
     svg
       [ version "1.1",  
@@ -85,4 +87,4 @@ view model =
           width  aspectWidthString,
           height aspectHeightString
       ]
-      [pathString]
+      [splashString, fishString, pathString]
