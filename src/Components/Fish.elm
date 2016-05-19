@@ -39,7 +39,9 @@ waveEquation cells barWidth =
        v = cells.v}
        
 
-type alias Model = {u : List Float, v : List Int, aspectWidth: Int, barWidth: Float }
+type alias Model = {u : List Float, v : List Int, 
+                    aspectWidth: Int, barWidth: Float,
+                    aspectHeight: Int }
 model =
   let
     aspectWidth = 1000
@@ -50,24 +52,21 @@ model =
     v = List.repeat length 0,
 
     aspectWidth = aspectWidth,
+    aspectHeight = 100,
     barWidth = aspectWidth / (toFloat length) }
 
 view model =
   let
-    aspectWidth = 1000
-    aspectHeight = 100
-    aspectHeightString = toString aspectHeight
-    aspectWidthString = toString aspectWidth
+    aspectHeightString = toString model.aspectHeight
+    aspectWidthString = toString model.aspectWidth
     length = 
       List.length model.u
-    barWidth =
-      aspectWidth / (toFloat length)
     xOffset position =
-      barWidth * (toFloat position)
+      model.barWidth * (toFloat position)
     bars =
       List.indexedMap (\i h->
-                         rect [y << toString <| (aspectHeight - h),
-                               x <| toString <| xOffset i, width <| toString barWidth, 
+                         rect [y << toString <| ((toFloat model.aspectHeight) - h),
+                               x <| toString <| xOffset i, width <| toString model.barWidth, 
                                height (toString h), 
                                fill "blue"][]) model.u
   in
