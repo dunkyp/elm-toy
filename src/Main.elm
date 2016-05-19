@@ -4,7 +4,7 @@ import Html.App as Html
 
 import Random
 -- component import example
-import Components.Fish exposing ( fish )
+import Components.Fish as Fish
 
 
 
@@ -14,11 +14,8 @@ main =
 
 
 -- MODEL
-type alias Model = List Float
-model =  Random.step (Random.list 200 (Random.float 1 100)) (Random.initialSeed 10) 
-      |> fst
-
-
+type alias Model = Fish.Model
+model =  Fish.model
 
 -- UPDATE
 type Msg = NoOp | Increment
@@ -34,7 +31,7 @@ view : Model -> Html Msg
 view model =
   div
     [ class "mt-palette-accent", style styles.wrapper ]
-      [fish model]
+      [Fish.view model]
 
 
 styles =
