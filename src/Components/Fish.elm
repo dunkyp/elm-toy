@@ -47,7 +47,7 @@ type alias Model = {u : Array.Array Float, v : Array.Array Float,
 model =
   let
     aspectWidth = 1000
-    length = 2000
+    length = 200
   in
   { u = Array.fromList <| fst <| Random.step (Random.list length (Random.float 10 20)) (Random.initialSeed 10),
     v = Array.repeat length 0.0,
@@ -66,10 +66,18 @@ view model =
       model.barWidth * (toFloat position)
     bars =
       Array.toList (Array.indexedMap (\i h->
-                                        rect [y << toString <| ((toFloat model.aspectHeight) - h),
-                                                x <| toString <| xOffset i, width <| toString model.barWidth, 
-                                                height (toString h), 
-                                                fill "blue"][]) (heights model).u)
+                                        Svg.rect [y << toString <| ((toFloat model.aspectHeight) - h),
+                                                    x <| toString <| xOffset i, width <| toString model.barWidth, 
+                                                    height (toString h), 
+                                                    fill "blue"][]) model.u)
+    pathStart = "M0 " ++ (toString model.aspectHeight)
+    pathEnd = "L" ++ (toString ((toFloat model.aspectWidth) - model.barWidth)) ++ " " ++ (toString model.aspectHeight) ++ " Z"
+    pathList = 
+      Array.toList (Array.indexedMap (\i h ->
+                                        "L" ++ (toString <| xOffset i) ++ " " ++ (toString <| ((toFloat model.aspectHeight) - h))
+                                     ) model.u)
+    pathString = Svg.path [d (pathStart ++ (List.foldr (++) "" pathList) ++ pathEnd),
+                          fill "blue"][]
   in
     svg
       [ version "1.1",  
@@ -77,4 +85,4 @@ view model =
           width  aspectWidthString,
           height aspectHeightString
       ]
-      bars
+      [pathString]
